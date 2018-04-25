@@ -1,0 +1,10 @@
+alias his=history
+alias c..=cd ..
+alias ex=exit
+alias mrcat 1=cat in
+alias mrcat 2=cat out
+alias dateu=date -u
+alias day=date +%A
+alias dus=du -s
+alias ll=ls -l
+alias p=pwd

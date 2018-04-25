@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include <dirent.h>
 #include "nshell.h"
 #include <time.h>
 #include <readline/readline.h>
@@ -178,6 +179,7 @@ int ns_help(char **args)
 int ns_exit(char **args)
 {
   printf("Exiting...\n");
+  sleep(1);
   return 0;
 }
 
@@ -849,6 +851,68 @@ char** ns_substitute_with_alias(char **cmds)
 	return cmds;
 }
 
+void countfiles(char *path_file)
+{
+	DIR *dir;
+	struct dirent *entry;
+	int count=0;
+	int count_reg=0;
+	int count_dir=0;
+	int count_sym=0;
+	int count_soc=0;
+	int count_bsf=0;
+	int count_csf=0;
+	int count_fifo=0;
+	 dir = opendir(path_file);
+	printf("--------------------------------------------------------------------\n");
+	printf("\t\t\tFile Types\n ");
+	printf("--------------------------------------------------------------------\n");
+	printf("RegularFiles\tDirectory SLink\tSocket\tBSF\tCSF\tFIFOpipe\n");
+	   
+	while((entry = readdir(dir))!= NULL)
+	{    	
+	char file_name[1024];
+	struct stat buf;
+    	int ret, fd;
+	
+	if(strcmp(entry->d_name,".") == 0 || strcmp(entry->d_name,"..") == 0) continue;
+	snprintf(file_name ,sizeof(file_name), "%s/%s",path_file,entry->d_name);
+	    ret = lstat(file_name,&buf);
+	    if(ret<0)
+	    {
+		perror("Stat");
+	    }
+	 switch(buf.st_mode & S_IFMT)
+	    {
+		case S_IFREG:
+			count_reg++;         
+			break;
+		case S_IFDIR:
+			count_dir++;
+		    break;
+		case S_IFLNK:
+			count_sym++;
+		    break;
+		case S_IFSOCK:
+			count_soc++;
+		    break;
+		case S_IFBLK:
+			count_bsf++;            
+			break;
+		case S_IFCHR:
+			count_csf++;
+		    break;
+		case S_IFIFO:
+			count_fifo++;
+		    break;
+		default:
+			count++;
+		    printf("Unknown File Type\n");
+	    }
+	}
+printf(" %d \t\t %d \t %d \t %d \t %d \t %d \t %d\n",count_reg,count_dir,count_sym,count_soc,count_bsf,count_csf,count_fifo);
+}
+
 char * ns_do_alias_maping(char *line)
 {
 	char *l = malloc(sizeof(char)*NS_READLINE_BUFSIZE);
@@ -941,7 +1005,9 @@ char *ns_custom(char *line)
 	
 	strcpy(l,line);
 	cmds = ns_split_line(l);
-	
+	if(strcmp(cmds[0],"countfiles")==0)
+		countfiles(cmds[1]);
+
 	if(strcmp(line,"ps -cpu")==0)
 		strcpy(line,"ps -auxf | sort -nr -k 3 | head -10");
 
