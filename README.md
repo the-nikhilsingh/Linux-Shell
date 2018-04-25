@@ -25,3 +25,4 @@ Apart from the above features, I would like you to implement 2 custom functions.
 3. ps -memry - Lists the top 10 Memory consuming processes.
 4. ps -z - Lists all the zombie processes.
 5. ls -z - Lists the files with size 0.
+6. countfiles - Count the number of different types of file in the folder.
