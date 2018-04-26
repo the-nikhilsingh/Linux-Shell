@@ -1018,7 +1018,7 @@ char *ns_custom(char *line)
 		strcpy(line,"ps -as | grep Z");
 
 	else if(strcmp(line,"ls -z")==0)
-		strcpy(line,"ls --size | grep 0");
+		strcpy(line,"find . -size 0 -ls");
 
 	else if(strcmp(cmds[0],"deepsearch")==0 || strcmp(cmds[0],"ds")==0)	
 	{
